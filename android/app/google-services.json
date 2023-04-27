@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "993876644673",
+    "project_id": "shaheenautos-1",
+    "storage_bucket": "shaheenautos-1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:993876644673:android:4cb156eca1b0950bfec7c0",
+        "android_client_info": {
+          "package_name": "aisonesystems.com.shaheenautos"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "993876644673-pfv7no857i393p5qc7fal3a74k5lc4dh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4QLtc_lhK_-IDnX8LLum4Mq3iOphFNlc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "993876644673-pfv7no857i393p5qc7fal3a74k5lc4dh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

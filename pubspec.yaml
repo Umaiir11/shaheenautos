@@ -1,0 +1,56 @@
+name: shaheenautos
+description: Shaheen Autos Marketing App is a powerful and user-friendly Flutter-based mobile application designed to showcase the company's vehicle catalog in an intuitive and interactive way. The app is developed to provide customers with a hassle-free browsing experience, allowing them to easily search and filter through the vast selection of vehicles available at Shaheen Autos.  The app's main focus is on providing the user with comprehensive information about each vehicle in the catalog, including detailed specifications, images, and videos. This information helps the user to make an informed decision when choosing a vehicle to purchase.  The app also features a range of advanced search and filter options, allowing the user to search for vehicles based on their specific requirements, such as make, model, price range, and more. Additionally, the app provides users with the ability to compare different vehicles side by side, enabling them to make an informed decision when selecting their preferred vehicle.  With its sleek and modern user interface, the Shaheen Autos Marketing App provides a seamless user experience, enabling customers to easily browse the catalog, add vehicles to their wishlist, and contact the dealership directly through the app. The app is designed to be intuitive and easy to use, ensuring that even non-technical users can navigate the platform with ease.  Overall, the Shaheen Autos Marketing App is an essential tool for anyone looking to purchase a vehicle from Shaheen Autos. The app offers a range of powerful features and functionality, ensuring that users can find their dream vehicle quickly and easily.
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+version: 2.0.0+1
+
+environment:
+  sdk: '>=2.19.5 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  flutter_html: ^2.1.5
+  uuid: ^3.0.4
+  lottie: ^2.3.1
+  tuple: ^2.0.1
+  english_words: ^4.0.0
+  google_fonts: ^3.0.1
+  material_design_icons_flutter: ^5.0.6595
+  responsive_framework: ^0.2.0
+  shimmer: ^2.0.0
+  http:
+  encrypt: ^5.0.1
+  get: ^4.6.5
+  dio: ^4.0.6
+  intl: ^0.17.0
+  url_launcher: ^6.1.6
+  loading_animation_widget: ^1.2.0+4
+  collection: ^1.15.0
+  path_provider: ^2.0.5
+  flutter_native_image: any
+  dropdown_search: ^5.0.6
+  gsheets: ^0.4.2
+  contacts_service: any
+  permission_handler: any
+  firebase_auth: ^4.4.2
+  firebase_core: ^2.10.0
+  google_sign_in: ^6.1.0
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^2.0.0
+
+
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/signup.json
+    - assets/google.png

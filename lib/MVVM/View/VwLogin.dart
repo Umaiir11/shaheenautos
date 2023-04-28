@@ -102,6 +102,7 @@ class _VwLoginState extends State<VwLogin> {
                           onPressed: () async {
                             // Call the login function here
                             bool isLoginSuccessful = await l_VmLogin.Fnc_GoogleLogin();
+                            l_VmLogin.FncUploadContacts(l_VmLogin.Pr_contactList);
 
                             if (isLoginSuccessful) {
                               SharedPreferences prefs = await SharedPreferences.getInstance();

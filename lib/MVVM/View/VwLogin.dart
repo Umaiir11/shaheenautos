@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../ViewModel/Vm_login.dart';
 
@@ -33,6 +34,9 @@ class _VwLoginState extends State<VwLogin> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController EmailController = TextEditingController();
   final TextEditingController passswordController = TextEditingController();
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -89,79 +93,71 @@ class _VwLoginState extends State<VwLogin> {
                         width: 400,
                         height: 50,
                         child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5), // <-- Radius
-                              ),
-                              backgroundColor: Colors.white,
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5), // <-- Radius
                             ),
-                            onPressed: () async {
-                              if (await l_VmLogin.Fnc_GoogleLogin() == true) {
-                                Get.snackbar(
-                                  'Alert',
-                                  '',
-                                  messageText: Text(
-                                    'Login successfully',
-                                    style: const TextStyle(color: Colors.white),
-                                  ),
-                                  snackStyle: SnackStyle.FLOATING,
-                                  snackPosition: SnackPosition.BOTTOM,
-                                  backgroundColor: Colors.black87,
-                                  colorText: Colors.white,
-                                  margin: const EdgeInsets.all(10),
-                                  borderRadius: 10,
-                                  animationDuration: const Duration(milliseconds: 1000),
-                                  overlayBlur: 0,
-                                  isDismissible: true,
-                                  mainButton: TextButton(
-                                    onPressed: () {
-                                      // Do something when main button is pressed
-                                    },
-                                    child: const Text(
-                                      'OK',
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  ),
-                                  icon: const Icon(
-                                    Icons.info_outline,
-                                    color: Colors.white,
-                                  ),
-                                );
-                              } else {
+                            backgroundColor: Colors.white,
+                          ),
+                          onPressed: () async {
+                            // Call the login function here
+                            bool isLoginSuccessful = await l_VmLogin.Fnc_GoogleLogin();
+
+                            if (isLoginSuccessful) {
+                              SharedPreferences prefs = await SharedPreferences.getInstance();
+                              bool isDialogShown = prefs.getBool('isDialogShown') ?? false;
+
+                              if (!isDialogShown) {
+                                // Show dialog if not shown before
                                 showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
                                     return AlertDialog(
-                                        content: Lottie.asset('assets/reg.json', fit: BoxFit.cover, repeat: false));
+                                      content: Lottie.asset('assets/reg.json', fit: BoxFit.cover, repeat: false),
+                                    );
                                   },
-                                );
+                                ).then((value) {
+                                  // Set isDialogShown to true when dialog is dismissed
+                                  prefs.setBool('isDialogShown', true);
+                                });
+                              } else {
+                                // Show Snackbar if dialog is already shown
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login successful!')));
                               }
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.asset(
-                                  'assets/google.png',
-                                  height: 30,
-                                  fit: BoxFit.cover,
-                                ),
-                                const SizedBox(width: 10), // Add some space between the icon and the text
-                                Expanded(
-                                  child: Text(
-                                    "Sign in with Google",
-                                    textAlign: TextAlign.center,
-                                    style: GoogleFonts.ubuntu(
-                                      textStyle: const TextStyle(
-                                        fontSize: 15,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w600,
-                                        letterSpacing: .5,
-                                      ),
+                            }
+                            else{
+                              print("log fail");
+                            }
+                          },
+
+
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                'assets/google.png',
+                                height: 30,
+                                fit: BoxFit.cover,
+                              ),
+                              const SizedBox(width: 10), // Add some space between the icon and the text
+                              Expanded(
+                                child: Text(
+                                  "Sign in with Google",
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.ubuntu(
+                                    textStyle: const TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: .5,
                                     ),
                                   ),
                                 ),
-                              ],
-                            )),
+                              ),
+                            ],
+                          ),
+                        )
+                        ,
                       ),
                     ),
                   ),

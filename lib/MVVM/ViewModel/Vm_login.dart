@@ -1,9 +1,11 @@
+
 import 'package:contacts_service/contacts_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class Vm_login extends GetxController  {
 
@@ -30,22 +32,11 @@ class Vm_login extends GetxController  {
       final User? user = userCredential.user;
 
       if (user != null) {
-        // Check if user already exists in Firebase Authentication
-        final userExists = await FirebaseAuth.instance.fetchSignInMethodsForEmail(user.email!);
-
-        if (userExists.isNotEmpty) {
-          // User exists, show login successful message
-          print("Login successful!");
-          return true;
-        } else {
-          // User does not exist, show registration successful message
-          print("Registration successful!");
-          return false;
-        }
-
+        print("Google sign-in successful!");
         print("User display name: ${user.displayName}");
         print("User email: ${user.email}");
         print("User photo URL: ${user.photoURL}");
+        return true;
       } else {
         print("Google sign-in failed.");
         return false;
@@ -55,7 +46,6 @@ class Vm_login extends GetxController  {
       return false;
     }
   }
-
 
 
 

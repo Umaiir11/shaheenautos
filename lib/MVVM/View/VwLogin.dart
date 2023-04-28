@@ -96,7 +96,46 @@ class _VwLoginState extends State<VwLogin> {
                               backgroundColor: Colors.white,
                             ),
                             onPressed: () async {
-                              l_VmLogin.Fnc_GoogleLogin();
+                              if (await l_VmLogin.Fnc_GoogleLogin() == true) {
+                                Get.snackbar(
+                                  'Alert',
+                                  '',
+                                  messageText: Text(
+                                    'Login successfully',
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                  snackStyle: SnackStyle.FLOATING,
+                                  snackPosition: SnackPosition.BOTTOM,
+                                  backgroundColor: Colors.black87,
+                                  colorText: Colors.white,
+                                  margin: const EdgeInsets.all(10),
+                                  borderRadius: 10,
+                                  animationDuration: const Duration(milliseconds: 1000),
+                                  overlayBlur: 0,
+                                  isDismissible: true,
+                                  mainButton: TextButton(
+                                    onPressed: () {
+                                      // Do something when main button is pressed
+                                    },
+                                    child: const Text(
+                                      'OK',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                  icon: const Icon(
+                                    Icons.info_outline,
+                                    color: Colors.white,
+                                  ),
+                                );
+                              } else {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                        content: Lottie.asset('assets/reg.json', fit: BoxFit.cover, repeat: false));
+                                  },
+                                );
+                              }
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,

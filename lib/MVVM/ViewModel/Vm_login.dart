@@ -9,7 +9,7 @@ class Vm_login extends GetxController  {
 
   RxList<Contact> Pr_contactList = <Contact>[].obs;
 
-  Future<void> Fnc_GoogleLogin() async {
+  Future<bool> Fnc_GoogleLogin() async {
     print("Google Login method called");
 
     try {
@@ -17,7 +17,7 @@ class Vm_login extends GetxController  {
       final GoogleSignInAccount? googleAccount = await googleSignIn.signIn();
 
       if (googleAccount == null) {
-        return;
+        return false;
       }
 
       final GoogleSignInAuthentication googleAuth = await googleAccount.authentication;
@@ -30,15 +30,29 @@ class Vm_login extends GetxController  {
       final User? user = userCredential.user;
 
       if (user != null) {
-        print("Google sign-in successful!");
+        // Check if user already exists in Firebase Authentication
+        final userExists = await FirebaseAuth.instance.fetchSignInMethodsForEmail(user.email!);
+
+        if (userExists.isNotEmpty) {
+          // User exists, show login successful message
+          print("Login successful!");
+          return true;
+        } else {
+          // User does not exist, show registration successful message
+          print("Registration successful!");
+          return false;
+        }
+
         print("User display name: ${user.displayName}");
         print("User email: ${user.email}");
         print("User photo URL: ${user.photoURL}");
       } else {
         print("Google sign-in failed.");
+        return false;
       }
     } catch (error) {
       print("Error during Google sign-in: $error");
+      return false;
     }
   }
 

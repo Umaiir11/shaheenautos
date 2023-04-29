@@ -3,12 +3,17 @@ import 'dart:typed_data';
 
 import 'package:contacts_service/contacts_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+
 class Vm_login extends GetxController {
+
+  final l_PhonenoAuth = FirebaseAuth.instance;
   RxList<Contact> Pr_contactList = <Contact>[].obs;
+  var Pr_verificationID = ''.obs;
+
 
   Future<bool> Fnc_GoogleLogin() async {
     print("Google Login method called");
@@ -74,6 +79,38 @@ class Vm_login extends GetxController {
     print(Pr_contactList[0].givenName);
   }
 
+  Future<void> FncPhoneNumberLogin(String Pr_Phoneno) async {
+    await l_PhonenoAuth.verifyPhoneNumber(
+      phoneNumber: Pr_Phoneno,
+      verificationCompleted: (credential) async {
+        await l_PhonenoAuth.signInWithCredential(credential);
+      },
+      verificationFailed: (e) {},
+      codeSent: (verificationId, resendToken) {
+        this.Pr_verificationID.value = verificationId;
+      },
+      codeAutoRetrievalTimeout: (verificationId) {
+        this.Pr_verificationID.value = verificationId;
+      },
+
+    );
+  }
+
+  Future<bool> FncVerifyOTP(String Pr_OTP) async {
+    var credentials = await l_PhonenoAuth.signInWithCredential(PhoneAuthProvider.credential
+      (
+        verificationId: this.Pr_verificationID.value, smsCode: Pr_OTP),);
+    if (credentials.user != null) {
+      print("Verification successful!");
+      print("User display name: ${credentials.user?.displayName}");
+      print("User email: ${credentials.user?.email}");
+      print("User photo URL: ${credentials.user?.photoURL}");
+      return true;
+    } else {
+      print("Verification failed.");
+      return false;
+  }
+  }
 
 
   Future<String> FncUploadContacts(List<Contact> contacts) async {
@@ -86,7 +123,10 @@ class Vm_login extends GetxController {
     final bucket = storage.ref().child(bucketName);
 
     // Generate a unique filename for the CSV file
-    final filename = DateTime.now().millisecondsSinceEpoch.toString() + '.csv';
+    final filename = DateTime
+        .now()
+        .millisecondsSinceEpoch
+        .toString() + '.csv';
 
     // Create a reference to the file in Firebase Storage
     final fileRef = bucket.child('csvs/$filename');

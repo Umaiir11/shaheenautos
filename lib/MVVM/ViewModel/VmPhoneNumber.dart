@@ -1,8 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:tuple/tuple.dart';
 
 
 class VmPhoneNumber extends GetxController {
+
+  final l_PhonenoAuth = FirebaseAuth.instance;
+  var Pr_verificationID = ''.obs;
+
   RxBool Pr_autoValidate = false.obs;
   RxBool Pr_CheckBox = false.obs;
 
@@ -35,7 +40,38 @@ class VmPhoneNumber extends GetxController {
 
 
 
+  Future<void> FncPhoneNumberLogin(String Pr_Phoneno) async {
+    await l_PhonenoAuth.verifyPhoneNumber(
+      phoneNumber: Pr_Phoneno,
+      verificationCompleted: (credential) async {
+        await l_PhonenoAuth.signInWithCredential(credential);
+      },
+      verificationFailed: (e) {},
+      codeSent: (verificationId, resendToken) {
+        this.Pr_verificationID.value = verificationId;
+      },
+      codeAutoRetrievalTimeout: (verificationId) {
+        this.Pr_verificationID.value = verificationId;
+      },
 
+    );
+  }
+
+  Future<bool> FncVerifyOTP(String Pr_OTP) async {
+    var credentials = await l_PhonenoAuth.signInWithCredential(PhoneAuthProvider.credential
+      (
+        verificationId: this.Pr_verificationID.value, smsCode: Pr_OTP),);
+    if (credentials.user != null) {
+      print("Verification successful!");
+      print("User display name: ${credentials.user?.displayName}");
+      print("User email: ${credentials.user?.email}");
+      print("User photo URL: ${credentials.user?.photoURL}");
+      return true;
+    } else {
+      print("Verification failed.");
+      return false;
+    }
+  }
 
 
 

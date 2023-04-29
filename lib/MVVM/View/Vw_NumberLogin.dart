@@ -63,13 +63,13 @@ class _VwPhoneNumberState extends State<VwPhoneNumber> {
                   SizedBox(
                     width: 220,
                     height: 170,
-                    child: Lottie.asset('assets/pass.json', fit: BoxFit.cover, repeat: false),
+                    child: Lottie.asset('assets/Scene.json', fit: BoxFit.cover, repeat: true),
                   ),
                   Padding(
                     padding: EdgeInsets.only(top: PrHeight * 0.04),
                     child: Center(
                       child: Text(
-                        "Reset Password",
+                        "Login WIth Number",
                         style: GoogleFonts.ubuntu(
                           textStyle: const TextStyle(
                             fontSize: 22,
@@ -84,7 +84,7 @@ class _VwPhoneNumberState extends State<VwPhoneNumber> {
                     padding: EdgeInsets.only(top: PrHeight * 0.02),
                     child: Center(
                       child: Text(
-                        "Please enter your email to reset your password. We will send you a secure link to reset your password. Please do not share this link with anyone.",
+                        "Enter your mobile number to login with the country code (e.g. +92). Make sure the number is correct before proceeding.",
                         textAlign: TextAlign.center,
                         style: GoogleFonts.ubuntu(
                           textStyle: const TextStyle(
@@ -103,7 +103,7 @@ class _VwPhoneNumberState extends State<VwPhoneNumber> {
                       child: SizedBox(
                           width: PrWidth * .890,
                           child: TextFormField(
-                            keyboardType: TextInputType.emailAddress,
+                            keyboardType: TextInputType.phone,
                             controller: PhoneController,
                             decoration: InputDecoration(
                               filled: true,
@@ -119,7 +119,6 @@ class _VwPhoneNumberState extends State<VwPhoneNumber> {
                                 return 'Number is required';
                               }
                               l_Vmpass.Pr_txtphonenumber_Text = value;
-
                             },
                             onChanged: (value) {
                               l_Vmpass.Pr_txtphonenumber_Text = value;
@@ -139,36 +138,45 @@ class _VwPhoneNumberState extends State<VwPhoneNumber> {
                                 animationDuration: const Duration(seconds: 2),
                                 shape: l_Vmpass.Pr_isLoading_wid.value
                                     ? RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(50),
-                                )
+                                        borderRadius: BorderRadius.circular(50),
+                                      )
                                     : RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
                                 backgroundColor: Colors.lightBlueAccent,
                               ),
                               onPressed: () async {
                                 if (_formKey.currentState!.validate()) {
+                                  await l_Vmpass.FncPhoneNumberLogin(l_Vmpass.Pr_txtphonenumber_Text.trim());
 
+                                  if (l_Vmpass.Pr_verificationID.value != null) {
+                                    // OTP received, stop the loading animation
+                                    l_Vmpass.Pr_isLoading_wid.value = false;
+                                    Get.snackbar("title", "OTP received");
+                                  } else {
+                                    // OTP not received yet, start the loading animation
+                                    l_Vmpass.Pr_isLoading_wid.value = true;
+                                    Get.snackbar("title", "Waiting for OTP...");
+                                  }
                                 } else {
                                   l_Vmpass.Pr_autoValidate.value = true;
                                 }
-
                               },
                               child: l_Vmpass.Pr_isLoading_wid.value
                                   ? LoadingAnimationWidget.twistingDots(
-                                leftDotColor: const Color(0xFF1A1A3F),
-                                rightDotColor: const Color(0xFFFFFFFF),
-                                size: 40,
-                              )
+                                      leftDotColor: const Color(0xFF1A1A3F),
+                                      rightDotColor: const Color(0xFFFFFFFF),
+                                      size: 40,
+                                    )
                                   : Text(
-                                "Tap",
-                                style: GoogleFonts.ubuntu(
-                                    textStyle: const TextStyle(
-                                        fontSize: 15,
-                                        color: Colors.white,
-                                        //fontWeight: FontWeight.w600,
-                                        letterSpacing: .5)),
-                              ),
+                                      "Tap",
+                                      style: GoogleFonts.ubuntu(
+                                          textStyle: const TextStyle(
+                                              fontSize: 15,
+                                              color: Colors.white,
+                                              //fontWeight: FontWeight.w600,
+                                              letterSpacing: .5)),
+                                    ),
                             );
                           })),
                     ),

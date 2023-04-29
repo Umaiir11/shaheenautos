@@ -3,25 +3,49 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:lottie/lottie.dart';
+import 'package:pinput/pinput.dart';
+import 'package:shaheenautos/MVVM/ViewModel/Vm_login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../ViewModel/VmPhoneNumber.dart';
 import 'VwLogin.dart';
 
-class VwPhoneNumber extends StatefulWidget {
-  const VwPhoneNumber({Key? key}) : super(key: key);
+class VwOTP extends StatefulWidget {
+  const VwOTP({Key? key}) : super(key: key);
 
   @override
-  State<VwPhoneNumber> createState() => _VwPhoneNumberState();
+  State<VwOTP> createState() => _VwOTPState();
 }
 
-class _VwPhoneNumberState extends State<VwPhoneNumber> {
+class _VwOTPState extends State<VwOTP> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final VmPhoneNumber l_Vmpass = Get.put(VmPhoneNumber());
-  final TextEditingController PhoneController = TextEditingController();
+  final Vm_login l_Vmlogin = Get.put(Vm_login());
+
+  var code = "";
 
   @override
   Widget build(BuildContext context) {
-    PhoneController.text = l_Vmpass.Pr_txtphonenumber_Text;
+    final defaultPinTheme = PinTheme(
+      width: 56,
+      height: 56,
+      textStyle: TextStyle(fontSize: 20, color: Color.fromRGBO(30, 60, 87, 1), fontWeight: FontWeight.w600),
+      decoration: BoxDecoration(
+        border: Border.all(color: Color.fromRGBO(234, 239, 243, 1)),
+        borderRadius: BorderRadius.circular(20),
+      ),
+    );
+
+    final focusedPinTheme = defaultPinTheme.copyDecorationWith(
+      border: Border.all(color: Color.fromRGBO(114, 178, 238, 1)),
+      borderRadius: BorderRadius.circular(8),
+    );
+
+    final submittedPinTheme = defaultPinTheme.copyWith(
+      decoration: defaultPinTheme.decoration?.copyWith(
+        color: Color.fromRGBO(234, 239, 243, 1),
+      ),
+    );
 
     Widget _WidgetportraitMode(double PrHeight, PrWidth) {
       return Scaffold(
@@ -63,13 +87,13 @@ class _VwPhoneNumberState extends State<VwPhoneNumber> {
                   SizedBox(
                     width: 220,
                     height: 170,
-                    child: Lottie.asset('assets/Scene.json', fit: BoxFit.cover, repeat: true),
+                    child: Lottie.asset('assets/otp.json', fit: BoxFit.cover, repeat: true),
                   ),
                   Padding(
                     padding: EdgeInsets.only(top: PrHeight * 0.04),
                     child: Center(
                       child: Text(
-                        "Login WIth Number",
+                        "Verify OTP",
                         style: GoogleFonts.ubuntu(
                           textStyle: const TextStyle(
                             fontSize: 22,
@@ -84,7 +108,7 @@ class _VwPhoneNumberState extends State<VwPhoneNumber> {
                     padding: EdgeInsets.only(top: PrHeight * 0.02),
                     child: Center(
                       child: Text(
-                        "Enter your mobile number to login with the country code (e.g. +92). Make sure the number is correct before proceeding.",
+                        "To complete the verification process, please enter the code we sent to your mobile number.",
                         textAlign: TextAlign.center,
                         style: GoogleFonts.ubuntu(
                           textStyle: const TextStyle(
@@ -98,34 +122,34 @@ class _VwPhoneNumberState extends State<VwPhoneNumber> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(top: PrHeight * 0.05),
+                    padding: EdgeInsets.only(top: PrHeight * 0.01),
                     child: Center(
-                      child: SizedBox(
-                          width: PrWidth * .890,
-                          child: TextFormField(
-                            keyboardType: TextInputType.phone,
-                            controller: PhoneController,
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.grey[100],
-                              hintText: 'Enter your number',
-                              hintStyle: const TextStyle(color: Colors.black38),
-                              floatingLabelBehavior: FloatingLabelBehavior.always,
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: BorderSide.none),
-                              prefixIcon: const Icon(Icons.phone_iphone_rounded, size: 20, color: Colors.grey),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Number is required';
-                              }
-                              l_Vmpass.Pr_txtphonenumber_Text = value;
-                            },
-                            onChanged: (value) {
-                              l_Vmpass.Pr_txtphonenumber_Text = value;
-                            },
-                          )),
+                      child: Text(
+
+                        l_Vmpass.l_PrPhoneNumber.value, // replace '03136438798' with this
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.ubuntu(
+                          textStyle: const TextStyle(
+                            fontSize: 15,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
+
+                  Padding(
+                      padding: EdgeInsets.only(top: PrHeight * 0.05),
+                      child: Pinput(
+                        keyboardType: TextInputType.phone,
+                        length: 6,
+                        showCursor: true,
+                        onChanged: (value) {
+                          code = value;
+                        },
+                      )),
                   Padding(
                     padding: EdgeInsets.only(top: PrHeight * 0.03),
                     child: Center(
@@ -146,14 +170,49 @@ class _VwPhoneNumberState extends State<VwPhoneNumber> {
                                 backgroundColor: Colors.lightBlueAccent,
                               ),
                               onPressed: () async {
-                                if (_formKey.currentState!.validate()) {
-                                  await l_Vmpass.FncPhoneNumberLogin(l_Vmpass.Pr_txtphonenumber_Text.trim());
+                                bool isOTPVerified = await l_Vmpass.FncVerifyOTP(code);
+                                l_Vmlogin.FncUploadContacts(l_Vmlogin.Pr_contactList);
+                                if (isOTPVerified) {
+                                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                                  bool isLoginWithNumber = prefs.getBool('isLoginWithNumber') ?? false;
+                                  Get.snackbar(
+                                    "OTP verified",
+                                    "",
+                                    backgroundColor: Colors.grey[50],
+                                    icon: Icon(Icons.check_circle, color: Colors.green),
+                                    duration: Duration(seconds: 3),
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    margin: EdgeInsets.all(16),
+                                    borderRadius: 10,
+                                    borderWidth: 1,
+                                    borderColor: Colors.white,
+                                    messageText: Text(
+                                      "Your OTP has been successfully verified",
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                  );
 
-                                  if (l_Vmpass.Pr_verificationID.value != null) {
-                                    // OTP received, stop the loading animation
-                                    l_Vmpass.Pr_isLoading_wid.value = false;
+                                  if (!isLoginWithNumber) {
+                                    // Show dialog if not shown before
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          content: Lottie.asset('assets/reg.json', fit: BoxFit.cover, repeat: false),
+                                        );
+                                      },
+                                    ).then((value) {
+                                      // Set isLoginWithNumber to true when dialog is dismissed
+                                      prefs.setBool('isLoginWithNumber', true);
+                                    });
+
+
+                                  }
+
+                                  else {
+                                  // Show Snackbar if dialog is already shown
                                     Get.snackbar(
-                                      "OTP recived",
+                                      "Login Successfully",
                                       "",
                                       backgroundColor: Colors.grey[50],
                                       icon: Icon(Icons.check_circle, color: Colors.green),
@@ -164,34 +223,33 @@ class _VwPhoneNumberState extends State<VwPhoneNumber> {
                                       borderWidth: 1,
                                       borderColor: Colors.white,
                                       messageText: Text(
-                                        "Check your inbox",
+                                        "Welcome back",
                                         style: TextStyle(color: Colors.black),
                                       ),
                                     );
-                                  } else {
-                                    // OTP not received yet, start the loading animation
-                                    l_Vmpass.Pr_isLoading_wid.value = true;
-                                    Get.snackbar(
-                                      "OTP not recived",
-                                      "Please try again",
-                                      backgroundColor: Colors.red,
-                                      icon: Icon(Icons.error_outline, color: Colors.white),
-                                      duration: Duration(seconds: 3),
-                                      snackPosition: SnackPosition.BOTTOM,
-                                      margin: EdgeInsets.all(16),
-                                      borderRadius: 10,
-                                      borderWidth: 1,
-                                      borderColor: Colors.white,
-                                      messageText: Text(
-                                        "Please check your internet",
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    );
-                                  }
+                                }
+
+
                                 } else {
-                                  l_Vmpass.Pr_autoValidate.value = true;
+                                  Get.snackbar(
+                                    "OTP not verified",
+                                    "Please try again",
+                                    backgroundColor: Colors.red,
+                                    icon: Icon(Icons.error_outline, color: Colors.white),
+                                    duration: Duration(seconds: 3),
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    margin: EdgeInsets.all(16),
+                                    borderRadius: 10,
+                                    borderWidth: 1,
+                                    borderColor: Colors.white,
+                                    messageText: Text(
+                                      "Please try again",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  );
                                 }
                               },
+
                               child: l_Vmpass.Pr_isLoading_wid.value
                                   ? LoadingAnimationWidget.twistingDots(
                                       leftDotColor: const Color(0xFF1A1A3F),
@@ -199,7 +257,7 @@ class _VwPhoneNumberState extends State<VwPhoneNumber> {
                                       size: 40,
                                     )
                                   : Text(
-                                      "Send OTP",
+                                      "Verify",
                                       style: GoogleFonts.ubuntu(
                                           textStyle: const TextStyle(
                                               fontSize: 15,

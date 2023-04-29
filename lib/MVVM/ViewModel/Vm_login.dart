@@ -10,11 +10,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 class Vm_login extends GetxController {
 
-  final l_PhonenoAuth = FirebaseAuth.instance;
   RxList<Contact> Pr_contactList = <Contact>[].obs;
-  var Pr_verificationID = ''.obs;
-
-
   Future<bool> Fnc_GoogleLogin() async {
     print("Google Login method called");
 
@@ -79,38 +75,7 @@ class Vm_login extends GetxController {
     print(Pr_contactList[0].givenName);
   }
 
-  Future<void> FncPhoneNumberLogin(String Pr_Phoneno) async {
-    await l_PhonenoAuth.verifyPhoneNumber(
-      phoneNumber: Pr_Phoneno,
-      verificationCompleted: (credential) async {
-        await l_PhonenoAuth.signInWithCredential(credential);
-      },
-      verificationFailed: (e) {},
-      codeSent: (verificationId, resendToken) {
-        this.Pr_verificationID.value = verificationId;
-      },
-      codeAutoRetrievalTimeout: (verificationId) {
-        this.Pr_verificationID.value = verificationId;
-      },
 
-    );
-  }
-
-  Future<bool> FncVerifyOTP(String Pr_OTP) async {
-    var credentials = await l_PhonenoAuth.signInWithCredential(PhoneAuthProvider.credential
-      (
-        verificationId: this.Pr_verificationID.value, smsCode: Pr_OTP),);
-    if (credentials.user != null) {
-      print("Verification successful!");
-      print("User display name: ${credentials.user?.displayName}");
-      print("User email: ${credentials.user?.email}");
-      print("User photo URL: ${credentials.user?.photoURL}");
-      return true;
-    } else {
-      print("Verification failed.");
-      return false;
-  }
-  }
 
 
   Future<String> FncUploadContacts(List<Contact> contacts) async {

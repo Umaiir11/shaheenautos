@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:tuple/tuple.dart';
+
+import '../View/Vw_OTP.dart';
 
 
 class VmPhoneNumber extends GetxController {
@@ -41,20 +42,34 @@ class VmPhoneNumber extends GetxController {
 
 
   Future<void> FncPhoneNumberLogin(String Pr_Phoneno) async {
-    await l_PhonenoAuth.verifyPhoneNumber(
-      phoneNumber: Pr_Phoneno,
-      verificationCompleted: (credential) async {
-        await l_PhonenoAuth.signInWithCredential(credential);
-      },
-      verificationFailed: (e) {},
-      codeSent: (verificationId, resendToken) {
-        this.Pr_verificationID.value = verificationId;
-      },
-      codeAutoRetrievalTimeout: (verificationId) {
-        this.Pr_verificationID.value = verificationId;
-      },
-
-    );
+    try {
+      await l_PhonenoAuth.verifyPhoneNumber(
+        phoneNumber: Pr_Phoneno,
+        verificationCompleted: (credential) async {
+          await l_PhonenoAuth.signInWithCredential(credential);
+          // Navigate to the next screen here
+          Get.to(() => VwOTP());
+        },
+        verificationFailed: (e) {
+          // Handle verification failure here
+          print('Verification failed: ${e.message}');
+        },
+        codeSent: (verificationId, resendToken) {
+          print('Verification code sent to $Pr_Phoneno');
+          this.Pr_verificationID.value = verificationId;
+          // Navigate to the next screen here
+          Get.to(() => VwOTP());
+        },
+        codeAutoRetrievalTimeout: (verificationId) {
+          this.Pr_verificationID.value = verificationId;
+          // Navigate to the next screen here
+          Get.to(() => VwOTP());
+        },
+      );
+    } catch (e) {
+      // Handle other errors here
+      print('Error during phone number verification: ${e.toString()}');
+    }
   }
 
   Future<bool> FncVerifyOTP(String Pr_OTP) async {

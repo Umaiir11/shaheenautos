@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../ViewModel/Vm_login.dart';
 import 'Vw_NumberLogin.dart';
+import 'Vw_OTP.dart';
 
 class VwLogin extends StatefulWidget {
   @override
@@ -124,11 +125,41 @@ class _VwLoginState extends State<VwLogin> {
                                 });
                               } else {
                                 // Show Snackbar if dialog is already shown
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login successful!')));
+                                Get.snackbar(
+                                  "Login Successfully",
+                                  "",
+                                  backgroundColor: Colors.grey[50],
+                                  icon: Icon(Icons.check_circle, color: Colors.green),
+                                  duration: Duration(seconds: 3),
+                                  snackPosition: SnackPosition.BOTTOM,
+                                  margin: EdgeInsets.all(16),
+                                  borderRadius: 10,
+                                  borderWidth: 1,
+                                  borderColor: Colors.white,
+                                  messageText: Text(
+                                    "Welcome back",
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                );
                               }
                             }
                             else{
-                              print("log fail");
+                              Get.snackbar(
+                                "",
+                                "Login Failed",
+                                backgroundColor: Colors.red,
+                                icon: Icon(Icons.error_outline, color: Colors.white),
+                                duration: Duration(seconds: 3),
+                                snackPosition: SnackPosition.BOTTOM,
+                                margin: EdgeInsets.all(16),
+                                borderRadius: 10,
+                                borderWidth: 1,
+                                borderColor: Colors.white,
+                                messageText: Text(
+                                  "Please try again",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              );
                             }
                           },
 
@@ -179,6 +210,7 @@ class _VwLoginState extends State<VwLogin> {
                           ),
                           onPressed: (){
                             Get.to(() => VwPhoneNumber());
+                            //Get.to(() => VwOTP());
 
                           },
 

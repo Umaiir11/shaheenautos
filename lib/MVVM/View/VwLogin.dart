@@ -7,6 +7,7 @@ import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../ViewModel/Vm_login.dart';
+import 'Vw_NumberLogin.dart';
 
 class VwLogin extends StatefulWidget {
   @override
@@ -149,6 +150,56 @@ class _VwLoginState extends State<VwLogin> {
                                     textStyle: const TextStyle(
                                       fontSize: 15,
                                       color: Colors.black,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: .5,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                        ,
+                      ),
+                    ),
+                  ),
+
+                  Padding(
+                    padding: EdgeInsets.only(top: PrHeight * 0.01),
+                    child: Center(
+                      child: SizedBox(
+                        width: 400,
+                        height: 50,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5), // <-- Radius
+                            ),
+                            backgroundColor: Colors.lightBlueAccent,
+                          ),
+                          onPressed: (){
+                            Get.to(() => VwPhoneNumber());
+
+                          },
+
+
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                'assets/phone.png',
+                                height: 30,
+                                fit: BoxFit.cover,
+                              ),
+                              const SizedBox(width: 10), // Add some space between the icon and the text
+                              Expanded(
+                                child: Text(
+                                  "Sign in with Number",
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.ubuntu(
+                                    textStyle: const TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.white,
                                       fontWeight: FontWeight.w600,
                                       letterSpacing: .5,
                                     ),
